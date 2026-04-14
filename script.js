@@ -1,129 +1,126 @@
-// Phase 1 Data
-const products = [
-    {
-        id: 'p1',
-        name: 'Classic Salted',
-        desc: 'The original, perfectly salted potato chip.',
-        price: '₹50',
-        colorHex: '#F1B11B', // Yellow
-        packColor: 'yellow',
-        img: 'classic_salted_lays.webp'
-    },
-    {
-        id: 'p2',
-        name: 'Magic Masala',
-        desc: 'India\'s favorite spicy and tangy chatpata flavor.',
-        price: '₹50',
-        colorHex: '#005BBB', // Blue
-        packColor: 'blue',
-        img: 'magic_masala_lays.webp' // Will be generated
-    },
-    {
-        id: 'p3',
-        name: 'American Style Cream & Onion',
-        desc: 'Smooth, creamy, and savory onion taste.',
-        price: '₹50',
-        colorHex: '#00A651', // Teal/Green
-        packColor: 'green',
-        img: 'cream_onion_lays.webp' // Will be generated
-    },
-    {
-        id: 'p4',
-        name: 'Spanish Tomato Tango',
-        desc: 'Sweet, tangy, and dangerously irresistible tomato flavor.',
-        price: '₹50',
-        colorHex: '#EF1C24', // Red
-        packColor: 'red',
-        img: 'tomato_tango_lays.webp' // Will be generated
-    }
-];
+/* ═══════════════════════════════════════════════════════════════════════════
+   SCRIPT.JS — Homepage logic (hero animations, featured product grid)
+   ═══════════════════════════════════════════════════════════════════════════ */
 
-// DOM Elements
-const productGrid = document.getElementById('productGrid');
-const cartBtn = document.getElementById('cart-btn');
-const closeCart = document.getElementById('closeCart');
-const cartOverlay = document.getElementById('cartOverlay');
-
-// Initialize Homepage
-function init() {
-    renderProducts();
-    setupEventListeners();
+document.addEventListener('DOMContentLoaded', () => {
+    renderFeaturedProducts();
     animateHero();
-}
+    createParticles();
+    setupScrollAnimations();
 
-function renderProducts() {
-    productGrid.innerHTML = '';
-    products.forEach((product, index) => {
-        // Add staggered animation delay
-        const delay = index * 0.1;
-        
+    // Newsletter form
+    const form = document.getElementById('newsletterForm');
+    if (form) {
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            showToast('🎉 Subscribed successfully!');
+            form.reset();
+        });
+    }
+});
+
+// ── Render Featured Products (Homepage Card Grid) ─────────────────────────
+function renderFeaturedProducts() {
+    const grid = document.getElementById('productGrid');
+    if (!grid) return;
+
+    grid.innerHTML = '';
+
+    PRODUCTS.forEach((product, index) => {
         const card = document.createElement('div');
-        card.className = 'product-card';
+        card.className = 'product-card fade-in-up';
         card.style.setProperty('--product-color', product.colorHex);
-        card.style.animationDelay = `${delay}s`;
-        
-        // Wait till images exist, fallback to gradient circles for layout tests
-        const imgSrc = product.img ? product.img : `https://via.placeholder.com/300x400/${product.colorHex.replace('#','')}/ffffff?text=${product.name}`;
-        
+        card.style.animationDelay = `${index * 0.15}s`;
+
+        const imgSrc = getProductSVG(product);
+        const defaultSize = product.sizes[1]; // Medium
+
         card.innerHTML = `
             <div class="product-img-wrap">
                 <div class="product-img-glow"></div>
-                <img src="${imgSrc}" alt="Lay's ${product.name}" onerror="this.src='https://placehold.co/300x400/111/fff?text=${product.name.split(' ').join('+')}';">
+                <img src="${imgSrc}" alt="Lay's ${product.name}">
             </div>
             <div class="product-info">
+                <span class="product-badge" style="background:${product.colorHex}20;color:${product.colorHex}">${product.badge}</span>
                 <h3>${product.name}</h3>
-                <p>${product.desc}</p>
+                <p>${product.tagline}</p>
                 <div class="product-actions">
-                    <span class="price">${product.price}</span>
-                    <button class="add-cart-btn" aria-label="Add to cart">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    <span class="price">₹${defaultSize.price} <small class="price-size">${defaultSize.weight}</small></span>
+                    <button class="add-cart-btn" aria-label="Add ${product.name} to cart" onclick="addToCart('${product.id}','${defaultSize.label}')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                     </button>
                 </div>
             </div>
         `;
-        productGrid.appendChild(card);
+
+        // Click card to go to product page
+        card.addEventListener('click', (e) => {
+            if (e.target.closest('.add-cart-btn')) return;
+            window.location.href = `product.html?id=${product.id}`;
+        });
+        card.style.cursor = 'pointer';
+
+        grid.appendChild(card);
     });
 }
 
-function setupEventListeners() {
-    // Navbar scroll effect
-    window.addEventListener('scroll', () => {
-        const nav = document.querySelector('.navbar');
-        if (window.scrollY > 50) {
-            nav.style.background = 'rgba(10, 10, 10, 0.95)';
-            nav.style.boxShadow = '0 4px 30px rgba(0, 0, 0, 0.5)';
-        } else {
-            nav.style.background = 'rgba(10, 10, 10, 0.8)';
-            nav.style.boxShadow = 'none';
-        }
-    });
-
-    // Cart Toggle
-    cartBtn.addEventListener('click', () => {
-        cartOverlay.classList.add('active');
-        document.body.style.overflow = 'hidden';
-    });
-
-    closeCart.addEventListener('click', () => {
-        cartOverlay.classList.remove('active');
-        document.body.style.overflow = '';
-    });
-}
-
-// Simple hero text stagger
+// ── Hero Animations ─────────────────────────────────────────────────────
 function animateHero() {
     const reveals = document.querySelectorAll('.reveal-text');
     reveals.forEach((el, index) => {
         el.style.opacity = '0';
-        el.style.transform = 'translateY(20px)';
-        el.style.transition = 'all 0.8s cubic-bezier(0.25, 0.8, 0.25, 1)';
-        
+        el.style.transform = 'translateY(30px)';
+        el.style.transition = 'opacity 0.8s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.8s cubic-bezier(0.25, 0.8, 0.25, 1)';
+
         setTimeout(() => {
             el.style.opacity = '1';
             el.style.transform = 'translateY(0)';
-        }, 300 + (index * 200));
+        }, 400 + (index * 250));
+    });
+
+    // Animate hero badge, subtitle, buttons, stats
+    const fadeEls = ['.hero-badge', '.hero-subtitle', '.hero-buttons', '.hero-stats'];
+    fadeEls.forEach((sel, i) => {
+        const el = document.querySelector(sel);
+        if (!el) return;
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(20px)';
+        el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        setTimeout(() => {
+            el.style.opacity = '1';
+            el.style.transform = 'translateY(0)';
+        }, 1200 + (i * 200));
     });
 }
 
-// Run init
-document.addEventListener('DOMContentLoaded', init);
+// ── Floating Particles ──────────────────────────────────────────────────
+function createParticles() {
+    const container = document.getElementById('heroParticles');
+    if (!container) return;
+
+    for (let i = 0; i < 20; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 5 + 's';
+        particle.style.animationDuration = (5 + Math.random() * 10) + 's';
+        particle.style.width = particle.style.height = (2 + Math.random() * 4) + 'px';
+        container.appendChild(particle);
+    }
+}
+
+// ── Scroll-triggered fade-in ────────────────────────────────────────────
+function setupScrollAnimations() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.section-header, .product-card, .story-content, .story-visual, .testimonial-card, .newsletter-container, .feature').forEach(el => {
+        el.classList.add('scroll-animate');
+        observer.observe(el);
+    });
+}

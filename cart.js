@@ -211,7 +211,23 @@ function updateCartUI() {
 }
 
 // ── Cart Sidebar Toggle ─────────────────────────────────────────────────
+function fixCartHeight() {
+    // Fix 100vh bug on mobile browsers — address bar causes 100vh > visible area
+    const sidebar = document.querySelector('.cart-sidebar');
+    const overlay = document.querySelector('.cart-overlay');
+    const h = window.innerHeight + 'px';
+    if (sidebar) sidebar.style.height = h;
+    if (overlay) overlay.style.height = h;
+}
+
 function setupCart() {
+    // Fix height on load and whenever viewport changes (orientation, scroll, etc.)
+    fixCartHeight();
+    window.addEventListener('resize', fixCartHeight);
+    window.addEventListener('orientationchange', () => {
+        setTimeout(fixCartHeight, 300); // Small delay for orientation to settle
+    });
+
     const cartBtn = document.getElementById('cart-btn');
     const closeCart = document.getElementById('closeCart');
     const cartOverlay = document.getElementById('cartOverlay');

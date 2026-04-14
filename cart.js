@@ -12,7 +12,7 @@ const PRODUCTS = [
         colorHex: '#F1B11B',
         colorName: 'yellow',
         badge: 'ORIGINAL',
-        imgFile: 'img/classic_salted.png',
+        imgFile: 'img/classic_salted_product_1776184356123.png',
         sizes: [
             { label: 'Small', weight: '52g', price: 20 },
             { label: 'Medium', weight: '115g', price: 50 },
@@ -28,7 +28,7 @@ const PRODUCTS = [
         colorHex: '#005BBB',
         colorName: 'blue',
         badge: 'BESTSELLER',
-        imgFile: 'img/magic_masala.png',
+        imgFile: 'img/magic_masala_product_1776184398131.png',
         sizes: [
             { label: 'Small', weight: '52g', price: 20 },
             { label: 'Medium', weight: '115g', price: 50 },
@@ -44,7 +44,7 @@ const PRODUCTS = [
         colorHex: '#00A651',
         colorName: 'green',
         badge: 'FAN FAVORITE',
-        imgFile: 'img/cream_onion.png',
+        imgFile: 'img/cream_onion_product_1776184415464.png',
         sizes: [
             { label: 'Small', weight: '52g', price: 20 },
             { label: 'Medium', weight: '115g', price: 50 },
@@ -60,7 +60,7 @@ const PRODUCTS = [
         colorHex: '#EF1C24',
         colorName: 'red',
         badge: 'TRENDING',
-        imgFile: 'img/tomato_tango.png',
+        imgFile: 'img/tomato_tango_product_1776184432904.png',
         sizes: [
             { label: 'Small', weight: '52g', price: 20 },
             { label: 'Medium', weight: '115g', price: 50 },
